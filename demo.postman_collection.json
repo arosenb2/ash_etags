@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "ba20d796-da2e-4d76-ab52-f3e18ecca7c0",
+		"name": "ETags Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4748292"
+	},
+	"item": [
+		{
+			"name": "List Foo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/v1/foo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Foo Resource (Missing ETag)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const etag = pm.response.headers.get(\"ETag\");",
+							"",
+							"if (etag !== null) {",
+							"    pm.collectionVariables.set(\"etag\", pm.response.headers.get(\"ETag\"));",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/v1/foo/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resource_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Foo Resource (Single ETag)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const etag = pm.response.headers.get(\"ETag\");",
+							"",
+							"if (etag !== null) {",
+							"    pm.collectionVariables.set(\"etag\", pm.response.headers.get(\"ETag\"));",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-None-Match",
+						"value": "{{etag}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:4000/v1/foo/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resource_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Foo Resource (Multiple ETags)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const etag = pm.response.headers.get(\"ETag\");",
+							"",
+							"if (etag !== null) {",
+							"    pm.collectionVariables.set(\"etag\", pm.response.headers.get(\"ETag\"));",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-None-Match",
+						"value": "W/\"ASDF123\",{{etag}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:4000/v1/foo/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resource_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch Foo Resource (Missing ETag)",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Updated title\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/v1/foo/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resource_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch Foo Resource (Valid ETag)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const etag = pm.response.headers.get(\"ETag\");",
+							"",
+							"if (etag !== null) {",
+							"    pm.collectionVariables.set(\"etag\", pm.response.headers.get(\"ETag\"));",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "If-Match",
+						"value": "{{etag}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Example - 1 but with too many characters\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/v1/foo/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resource_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "resource_id",
+			"value": "4ad4b77b-314a-4d84-bf66-c51834ffe794"
+		},
+		{
+			"key": "etag",
+			"value": "W/\"19D6453\""
+		}
+	]
+}
