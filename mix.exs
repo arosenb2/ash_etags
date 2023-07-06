@@ -39,7 +39,8 @@ defmodule Etags.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ash, "~> 2.10"},
       {:ash_postgres, "~> 1.3"},
-      {:ash_phoenix, "~> 1.2"}
+      {:ash_phoenix, "~> 1.2"},
+      {:uuidv7, "~> 0.2.0"}
     ]
   end
 

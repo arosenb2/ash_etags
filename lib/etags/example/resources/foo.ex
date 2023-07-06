@@ -5,6 +5,8 @@ defmodule Etags.Example.Foo do
   use Ash.Resource,
     data_layer: Ash.DataLayer.Ets
 
+  require Etags.Common.Attributes
+
   code_interface do
     define_for Etags.Example
 
@@ -19,7 +21,7 @@ defmodule Etags.Example.Foo do
     defaults [:create, :read, :update, :destroy]
 
     read :by_id do
-      argument :id, :uuid do
+      argument :id, :string do
         allow_nil? false
       end
 
@@ -40,7 +42,7 @@ defmodule Etags.Example.Foo do
   end
 
   attributes do
-    uuid_primary_key :id
+    Etags.Common.Attributes.uuid(slug: "foo")
 
     attribute :title, :string do
       allow_nil? false
