@@ -7,6 +7,16 @@ defmodule Etags.Application do
 
   @impl true
   def start(_type, _args) do
+    # Automatically provide seed data.
+    # Normally this is done outside of the application life, but since we are using
+    # ETS, it needs to happen at application start.
+    IO.puts("Seeding in-memory database...")
+
+    1..10
+    |> Enum.map(fn num -> Etags.Example.Foo.create!(%{title: "Example - #{num}"}) end)
+
+    IO.puts("Initial data is seeded.")
+
     children = [
       # Start the Telemetry supervisor
       EtagsWeb.Telemetry,

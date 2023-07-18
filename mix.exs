@@ -52,7 +52,8 @@ defmodule Etags.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get"]
+      setup: ["deps.get"],
+      seed: ["run priv/repo/seeds.exs"]
     ]
   end
 end
