@@ -9,6 +9,10 @@ defmodule EtagsWeb.Controllers.FooController do
   alias EtagsWeb.Dtos.FooResponse
 
   @etag_salt "foo"
+  @etag_req_headers [
+    if_match: "if-match",
+    if_none_match: "if-none-match"
+  ]
 
   def list(conn, _opts) do
     with {:ok, values} <- Foo.list() do
@@ -25,11 +29,17 @@ defmodule EtagsWeb.Controllers.FooController do
 
   def show(conn, %{"id" => id}) do
     with {:ok, etag} <- fetch_etag(id),
-         :ok <- process_etag(conn, etag, "if-none-match") do
+         :ok <- validate_header(conn, etag, @etag_req_headers[:if_none_match], true) do
       conn
       |> send_resp(:not_modified, "")
     else
-      {:error, {:invalid_or_missing_etag, etag}} ->
+      # Should not ever be the case due to validate_header/4 specifying
+      # that whether missing headers are allowed or not
+      {:error, {:missing_header, _}} ->
+        conn
+        |> send_resp(:precondition_required, "")
+
+      {:error, {:invalid_etag, etag}} ->
         with {:ok, value} <- Foo.get_by_id(id) do
           # Artificial delay for processing
           :timer.sleep(1_500)
@@ -53,7 +63,7 @@ defmodule EtagsWeb.Controllers.FooController do
   def patch(conn, %{"id" => id} = params) do
     with {:ok, resource} <- Foo.get_by_id(id),
          {:ok, etag} <- fetch_etag(id),
-         :ok <- process_etag(conn, etag, "if-match"),
+         :ok <- validate_header(conn, etag, @etag_req_headers[:if_match], false),
          {:ok, changeset} <- validate_patch(resource, params) do
       case Etags.Example.update(changeset) do
         {:ok, result} ->
@@ -71,7 +81,11 @@ defmodule EtagsWeb.Controllers.FooController do
         conn
         |> send_resp(:not_found, "")
 
-      {:error, {:invalid_or_missing_etag, _}} ->
+      {:error, {:missing_header, _}} ->
+        conn
+        |> send_resp(:precondition_required, "")
+
+      {:error, {:invalid_etag, _}} ->
         conn
         |> send_resp(:precondition_failed, "")
 
@@ -112,6 +126,20 @@ defmodule EtagsWeb.Controllers.FooController do
     {:ok, etag}
   end
 
+  defp validate_header(conn, etag, header_name, allow_missing_header?) do
+    case get_req_header(conn, header_name) do
+      [] ->
+        if allow_missing_header? do
+          process_etag(conn, etag, header_name)
+        else
+          {:error, {:missing_header, header_name}}
+        end
+
+      _ ->
+        process_etag(conn, etag, header_name)
+    end
+  end
+
   defp process_etag(conn, etag, header_name) do
     {etags_to_match, _} =
       get_req_header(conn, header_name)
@@ -129,7 +157,7 @@ defmodule EtagsWeb.Controllers.FooController do
           "No matching ETags - needle: #{etag}, haystack: [#{Enum.join(etags_to_match, ", ")}]"
         )
 
-        {:error, {:invalid_or_missing_etag, etag}}
+        {:error, {:invalid_etag, etag}}
     end
   end
 end

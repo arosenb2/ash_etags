@@ -201,6 +201,48 @@
 			"response": []
 		},
 		{
+			"name": "Patch Foo Resource (Invalid ETag)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "If-Match",
+						"value": "W/\"12345\"",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Updated title\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/v1/foo/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"v1",
+						"foo",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{resource_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Patch Foo Resource (Valid ETag)",
 			"event": [
 				{
@@ -281,7 +323,7 @@
 	"variable": [
 		{
 			"key": "resource_id",
-			"value": "4ad4b77b-314a-4d84-bf66-c51834ffe794"
+			"value": "foo_02tg6jfOuAftPkU7lMgqrX"
 		},
 		{
 			"key": "etag",
