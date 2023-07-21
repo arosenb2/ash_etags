@@ -1,0 +1,46 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "elixir-mixCompileError",
+      "severity": "error",
+      "pattern": [
+        {
+          "regexp": "^\\*\\* \\((\\w+)\\) (.*):(\\d+): (.*)$",
+          "file": 2,
+          "line": 3,
+          "message": 0
+        }
+      ]
+    },
+    {
+      "owner": "elixir-mixCompileWarning",
+      "severity": "warning",
+      "pattern": [
+        {
+          "regexp": "^warning: (.*)$",
+          "message": 1
+        },
+        {
+          "regexp": "^  (.*):(\\d+).*$",
+          "file": 1,
+          "line": 2
+        }
+      ]
+    },
+    {
+      "owner": "elixir-mixTestFailure",
+      "severity": "error",
+      "pattern": [
+        {
+          "regexp": "^\\s*\\d+\\) (.*)$",
+          "message": 1
+        },
+        {
+          "regexp": "^\\s*(.*):(\\d+)$",
+          "file": 1,
+          "line": 2
+        }
+      ]
+    }
+  ]
+}
